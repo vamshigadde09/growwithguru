@@ -1,6 +1,8 @@
 const InterviewRequest = require("../models/interviewRequestModel");
 const TeacherProfile = require("../models/teacherporfile");
 const Feedback = require("../models/feedbackModel");
+const Review = require("../models/Review");
+
 const generateUniqueApplicationNumber = async () => {
   let isUnique = false;
   let applicationNumber;
@@ -404,9 +406,26 @@ const submitReview = async (req, res) => {
     });
   }
 
+  if (starRating === 0 || reviewComment.trim() === "") {
+    return res.status(400).json({
+      message: "Please provide both a star rating and a comment.",
+    });
+  }
+
+  const interviewRequest = await InterviewRequest.findById(interviewRequestId);
+  if (!interviewRequest) {
+    return res.status(404).json({ message: "Invalid interviewRequestId." });
+  }
+
   try {
     const review = new Review({
       studentId,
+      interviewRequestId,
+      starRating,
+      reviewComment,
+    });
+
+    console.log({
       interviewRequestId,
       starRating,
       reviewComment,
@@ -418,9 +437,8 @@ const submitReview = async (req, res) => {
       .status(201)
       .json({ message: "Review submitted successfully.", data: review });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error submitting review: " + error.message });
+    console.error("Error submitting review:", error.stack);
+    res.status(500).json({ message: "Server error: " + error.message });
   }
 };
 

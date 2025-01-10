@@ -45,12 +45,23 @@ const FeedbackView = () => {
     const [reviewComment, setReviewComment] = useState("");
 
     const handleRating = (rating) => {
-      setStarRating(rating); // The rating value will be between 0 and 100
+      setStarRating(rating / 20);
     };
 
     const handleFeedbackSubmit = async () => {
+      if (starRating === 0 || reviewComment.trim() === "") {
+        alert("Please provide both a star rating and a comment.");
+        return;
+      }
+
       try {
         const token = localStorage.getItem("token");
+        console.log({
+          interviewRequestId: feedback.interviewRequestId._id,
+          starRating,
+          reviewComment,
+        });
+
         await axios.post(
           "http://localhost:8080/api/v1/interview/submit",
           {
@@ -62,6 +73,7 @@ const FeedbackView = () => {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
+
         alert("Review submitted successfully!");
         setShowReviewForm(false);
       } catch (err) {

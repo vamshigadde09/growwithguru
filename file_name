@@ -112,3 +112,37 @@
     </span>
   </p>
 </div>
+
+
+
+
+const submitReview = async (req, res) => {
+  const { interviewRequestId, starRating, reviewComment } = req.body;
+  const studentId = req.user.id;
+
+  if (!starRating || !reviewComment || !interviewRequestId) {
+    return res.status(400).json({
+      message:
+        "All fields are required (interviewRequestId, starRating, reviewComment).",
+    });
+  }
+
+  try {
+    const review = new Review({
+      studentId,
+      interviewRequestId,
+      starRating,
+      reviewComment,
+    });
+
+    await review.save();
+
+    res
+      .status(201)
+      .json({ message: "Review submitted successfully.", data: review });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error submitting review: " + error.message });
+  }
+};
