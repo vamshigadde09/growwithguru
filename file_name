@@ -1,0 +1,114 @@
+<div className="feedback-details">
+  <p className="feedback-topic">
+    <strong>Topic:</strong> {feedback.interviewRequestId?.topic}
+  </p>
+  <p className="feedback-date">
+    <strong>Date:</strong>{" "} {new
+    Date(feedback.interviewRequestId?.date).toLocaleDateString()}
+  </p>
+</div>
+<div className="detailed-feedback">
+  <h4 className="detailed-feedback-title">Detailed Feedback</h4>
+  <p className="feedback-communication-skills">
+    <strong>Communication Skills:</strong>{" "}
+    <span className="feedback-communication-skills-value">
+      {feedback.communicationSkills}
+    </span>
+  </p>
+  <p className="feedback-technical-knowledge">
+    <strong>Technical Knowledge:</strong>{" "}
+    <span className="feedback-technical-knowledge-value">
+      {feedback.technicalKnowledge}
+    </span>
+  </p>
+  <p className="feedback-problem-solving">
+    <strong>Problem-Solving Ability:</strong>{" "}
+    <span className="feedback-problem-solving-value">
+      {feedback.problemSolvingAbility}
+    </span>
+  </p>
+  <p className="feedback-confidence-body-language">
+    <strong>Confidence and Body Language:</strong>{" "}
+    <span className="feedback-confidence-body-language-value">
+      {feedback.confidenceAndBodyLanguage}
+    </span>
+  </p>
+  <p className="feedback-time-management">
+    <strong>Time Management:</strong>{" "}
+    <span className="feedback-time-management-value">
+      {feedback.timeManagement}
+    </span>
+  </p>
+  <p className="feedback-overall-performance">
+    <strong>Overall Performance:</strong>{" "}
+    <span className="feedback-overall-performance-value">
+      {feedback.overallPerformance}
+    </span>
+  </p>
+  <p className="feedback-strengths">
+    <strong>Strengths:</strong>{" "}
+    <span className="feedback-strengths-value">{feedback.strengths}</span>
+  </p>
+  <p className="feedback-areas-for-improvement">
+    <strong>Areas for Improvement:</strong>{" "}
+    <span className="feedback-areas-for-improvement-value">
+      {feedback.areasForImprovement}
+    </span>
+  </p>
+  <p className="feedback-opening-statement">
+    <strong>Opening Statement:</strong>{" "}
+    <span className="feedback-opening-statement-value">
+      {feedback.detailedFeedback?.openingStatement}
+    </span>
+  </p>
+  <p className="feedback-technical-analysis">
+    <strong>Technical Analysis:</strong>{" "}
+    <span className="feedback-technical-analysis-value">
+      {feedback.detailedFeedback?.technicalAnalysis}
+    </span>
+  </p>
+  <p className="feedback-problem-solving-discussion">
+    <strong>Problem Solving Discussion:</strong>{" "}
+    <span className="feedback-problem-solving-discussion-value">
+      {feedback.detailedFeedback?.problemSolvingDiscussion}
+    </span>
+  </p>
+  <p className="feedback-communication-observations">
+    <strong>Communication Observations:</strong>{" "}
+    <span className="feedback-communication-observations-value">
+      {feedback.detailedFeedback?.communicationObservations}
+    </span>
+  </p>
+  <p className="feedback-behavioral-assessment">
+    <strong>Behavioral Assessment:</strong>{" "}
+    <span className="feedback-behavioral-assessment-value">
+      {feedback.detailedFeedback?.behavioralAssessment}
+    </span>
+  </p>
+  <p className="feedback-closing-remarks">
+    <strong>Closing Remarks:</strong>{" "}
+    <span className="feedback-closing-remarks-value">
+      {feedback.detailedFeedback?.closingRemarks}
+    </span>
+  </p>
+</div>
+<div className="additional-feedback">
+  <p className="feedback-actionable-suggestions">
+    <strong>Actionable Suggestions:</strong>{" "}
+    <span className="feedback-actionable-suggestions-value">
+      {feedback.actionableSuggestions.join(", ")}
+    </span>
+  </p>
+  <p className="feedback-additional-comments">
+    <strong>Additional Comments:</strong>{" "}
+    <span className="feedback-additional-comments-value">
+      {feedback.additionalComments}
+    </span>
+  </p>
+  <p className="feedback-recommendation">
+    <strong>Recommendation:</strong>{" "}
+    <span className="feedback-recommendation-value">
+      {feedback.recommendation ? "Yes" : "No"}
+    </span>
+  </p>
+</div>
