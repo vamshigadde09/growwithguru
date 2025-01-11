@@ -1,0 +1,32 @@
+npm i axios 
+npm i antd 
+npm i react-redux 
+npm i react-spinners 
+npm i concurrently --save-dev 
+npm i web-vitals --save-dev 
+npm i react-router-dom@latest 
+npm i react-scripts --save 
+npm install @auth0/auth0-react 
+npm install @tanstack/react-query 
+npm install @reduxjs/toolkit 
+npm install styled-components 
+npm install @coreui/react 
+npm install react-select 
+npm install socket.io-client 
+npm install react-simple-star-rating
+
+
+
+npm i express 
+npm i cors 
+npm i multer 
+npm i express-rate-limit 
+npm i winston 
+npm i morgan 
+npm i colors 
+npm i dotenv 
+npm i nodemon --save-dev 
+npm i mongoose 
+npm i jsonwebtoken 
+npm i bcryptjs 
+npm install socket.io
