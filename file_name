@@ -32,6 +32,6 @@ git remote add origin "https://github.com/vamshigadde09/growwithguru.git"
 
 git add .
 
-git commit -m "first commit"
+git commit -m "2_commit(             )"
 
-git push -u origin main
+git push -u origin test
