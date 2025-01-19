@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../../styles/ProfilePage.css";
 import axios from "axios";
-import { useQuery, useMutation, useQueryClient } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import StudentHeader from "../Header/StudentHeader";
 import Footer from "../Footer/Footer";
 import Spinner from "../../components/Spinner";
@@ -37,9 +37,20 @@ const ProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({});
 
-  const { isLoading, error } = useQuery("studentProfile", fetchStudentData, {
-    onSuccess: (profileData) => setFormData(profileData),
-  });
+  // Load data from localStorage on component mount
+  useEffect(() => {
+    const savedData = localStorage.getItem("profileData");
+    if (savedData) {
+      setFormData(JSON.parse(savedData));
+    } else {
+      fetchStudentData().then((profileData) => setFormData(profileData));
+    }
+  }, []);
+
+  // Save data to localStorage whenever formData changes
+  useEffect(() => {
+    localStorage.setItem("profileData", JSON.stringify(formData));
+  }, [formData]);
 
   const mutation = useMutation(updateStudentData, {
     onSuccess: () => {
@@ -53,6 +64,7 @@ const ProfilePage = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
+
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     const reader = new FileReader();
@@ -61,6 +73,7 @@ const ProfilePage = () => {
     };
     reader.readAsDataURL(file);
   };
+
   const handleSave = () => {
     const cleanedProjects =
       formData.projects?.filter(
@@ -70,10 +83,8 @@ const ProfilePage = () => {
     mutation.mutate(formData);
   };
 
-  if (isLoading) return <Spinner />;
-  if (error) return <div>Error: {error.message}</div>;
+  if (!formData) return <Spinner />;
 
-  // New fields to render
   const profileFields = [
     { label: "Name", field: "name" },
     { label: "Phone", field: "phone" },
@@ -179,7 +190,6 @@ const ProfilePage = () => {
             if (isEditing) {
               handleSave();
             } else {
-              // Remove empty projects when entering edit mode
               const cleanedProjects =
                 formData.projects?.filter(
                   (project) =>
