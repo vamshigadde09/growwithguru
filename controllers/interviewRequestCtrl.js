@@ -365,7 +365,14 @@ const getFeedbackForStudent = async (req, res) => {
     const studentId = req.user.id;
 
     const feedbacks = await Feedback.find({ studentId })
-      .populate("interviewRequestId", "applicationNumber topic date")
+      .populate({
+        path: "interviewRequestId",
+        select: "applicationNumber topic date interviewType skills teacher",
+        populate: {
+          path: "teacher.teacherId",
+          select: "name designation skills",
+        },
+      })
       .exec();
 
     const feedbackWithReviewStatus = await Promise.all(
@@ -419,18 +426,14 @@ const submitReview = async (req, res) => {
     });
   }
 
-  if (starRating === 0 || reviewComment.trim() === "") {
-    return res.status(400).json({
-      message: "Please provide both a star rating and a comment.",
-    });
-  }
-
-  const interviewRequest = await InterviewRequest.findById(interviewRequestId);
-  if (!interviewRequest) {
-    return res.status(404).json({ message: "Invalid interviewRequestId." });
-  }
-
   try {
+    const interviewRequest = await InterviewRequest.findById(
+      interviewRequestId
+    );
+    if (!interviewRequest) {
+      return res.status(404).json({ message: "Invalid interviewRequestId." });
+    }
+
     const existingReview = await Review.findOne({
       interviewRequestId,
       studentId,
@@ -445,14 +448,24 @@ const submitReview = async (req, res) => {
       starRating,
       reviewComment,
     });
-
     await review.save();
+
+    // Update feedback and interview request statuses
+    await Feedback.updateOne(
+      { interviewRequestId },
+      { $set: { reviewSubmitted: true } }
+    );
+    await InterviewRequest.findByIdAndUpdate(
+      interviewRequestId,
+      { $set: { status: "Review Submitted" } },
+      { new: true }
+    );
 
     res
       .status(201)
       .json({ message: "Review submitted successfully.", data: review });
   } catch (error) {
-    console.error("Error submitting review:", error.stack);
+    console.error("Error submitting review:", error.message);
     res.status(500).json({ message: "Server error: " + error.message });
   }
 };
