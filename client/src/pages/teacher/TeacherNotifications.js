@@ -247,21 +247,21 @@ const TeacherNotifications = () => {
                       onClick={() =>
                         setEditingType((prev) => ({
                           ...prev,
-                          [notification.applicationNumber]: "Reject",
-                        }))
-                      }
-                    >
-                      Reject
-                    </button>
-                    <button
-                      onClick={() =>
-                        setEditingType((prev) => ({
-                          ...prev,
                           [notification.applicationNumber]: "Accept",
                         }))
                       }
                     >
                       Accept
+                    </button>
+                    <button
+                      onClick={() =>
+                        setEditingType((prev) => ({
+                          ...prev,
+                          [notification.applicationNumber]: "Reject",
+                        }))
+                      }
+                    >
+                      Reject
                     </button>
                   </>
                 )}

@@ -71,6 +71,10 @@ const interviewRequestSchema = new mongoose.Schema(
     isFeedbackSubmitted: { type: Boolean, default: false },
     feedbackId: { type: String, default: null },
     applicationNumber: { type: Number, unique: true, required: true },
+    isReviewSubmitted: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   { timestamps: true }

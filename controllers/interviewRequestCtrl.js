@@ -368,10 +368,23 @@ const getFeedbackForStudent = async (req, res) => {
       .populate("interviewRequestId", "applicationNumber topic date")
       .exec();
 
+    const feedbackWithReviewStatus = await Promise.all(
+      feedbacks.map(async (feedback) => {
+        const review = await Review.findOne({
+          interviewRequestId: feedback.interviewRequestId._id,
+          studentId,
+        });
+        return {
+          ...feedback._doc,
+          reviewSubmitted: !!review,
+        };
+      })
+    );
+
     res.status(200).json({
       message: "Feedback fetched successfully",
       success: true,
-      data: feedbacks,
+      data: feedbackWithReviewStatus,
     });
   } catch (error) {
     console.error("Error fetching feedback:", error.message);
@@ -418,14 +431,16 @@ const submitReview = async (req, res) => {
   }
 
   try {
+    const existingReview = await Review.findOne({
+      interviewRequestId,
+      studentId,
+    });
+    if (existingReview) {
+      return res.status(400).json({ message: "Review already submitted." });
+    }
+
     const review = new Review({
       studentId,
-      interviewRequestId,
-      starRating,
-      reviewComment,
-    });
-
-    console.log({
       interviewRequestId,
       starRating,
       reviewComment,

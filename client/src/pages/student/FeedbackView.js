@@ -44,9 +44,7 @@ const FeedbackView = () => {
     const [starRating, setStarRating] = useState(0);
     const [reviewComment, setReviewComment] = useState("");
 
-    const handleRating = (rating) => {
-      setStarRating(rating / 20);
-    };
+    const handleRating = (rating) => setStarRating(rating);
 
     const handleFeedbackSubmit = async () => {
       if (starRating === 0 || reviewComment.trim() === "") {
@@ -56,12 +54,6 @@ const FeedbackView = () => {
 
       try {
         const token = localStorage.getItem("token");
-        console.log({
-          interviewRequestId: feedback.interviewRequestId._id,
-          starRating,
-          reviewComment,
-        });
-
         await axios.post(
           "http://localhost:8080/api/v1/interview/submit",
           {
@@ -69,11 +61,8 @@ const FeedbackView = () => {
             starRating,
             reviewComment,
           },
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
-
         alert("Review submitted successfully!");
         setShowReviewForm(false);
       } catch (err) {
@@ -84,7 +73,7 @@ const FeedbackView = () => {
 
     return (
       <li className="feedback-item">
-        <h3 className="feedback-title">
+        <h3>
           Feedback for Application #{" "}
           {feedback.interviewRequestId?.applicationNumber}
         </h3>
@@ -206,30 +195,20 @@ const FeedbackView = () => {
             </span>
           </p>
         </div>
-        {!showReviewForm ? (
-          <button
-            className="feedback-button"
-            onClick={() => setShowReviewForm(true)}
-          >
-            Give Review
-          </button>
+        {!feedback.reviewSubmitted ? (
+          <button onClick={() => setShowReviewForm(true)}>Give Review</button>
         ) : (
-          <div className="feedback-form">
+          <p className="review-submitted-message">Review already submitted.</p>
+        )}
+        {showReviewForm && (
+          <div>
             <label>
               Star Rating:
               <Rating
                 onClick={handleRating}
-                ratingValue={starRating} // Current value
+                ratingValue={starRating}
                 allowHalfIcon
                 size={25}
-                showTooltip
-                tooltipArray={[
-                  "Terrible",
-                  "Bad",
-                  "Average",
-                  "Good",
-                  "Excellent",
-                ]}
               />
             </label>
             <label>
@@ -239,20 +218,8 @@ const FeedbackView = () => {
                 onChange={(e) => setReviewComment(e.target.value)}
               />
             </label>
-            <div className="feedback-buttons">
-              <button
-                className="feedback-button"
-                onClick={handleFeedbackSubmit}
-              >
-                Submit Review
-              </button>
-              <button
-                className="feedback-button close-button"
-                onClick={() => setShowReviewForm(false)}
-              >
-                Close Review
-              </button>
-            </div>
+            <button onClick={handleFeedbackSubmit}>Submit Review</button>
+            <button onClick={() => setShowReviewForm(false)}>Cancel</button>
           </div>
         )}
       </li>
@@ -263,11 +230,11 @@ const FeedbackView = () => {
     <div className="feedback-view">
       <StudentHeader />
       <div className="feedback-container">
-        <h1 className="feedback-header">Your Feedback</h1>
+        <h1>Your Feedback</h1>
         {feedbacks.length === 0 ? (
-          <p className="no-feedback">No feedback available yet.</p>
+          <p>No feedback available yet.</p>
         ) : (
-          <ul className="feedback-list">
+          <ul>
             {feedbacks.map((feedback) => (
               <FeedbackItem key={feedback._id} feedback={feedback} />
             ))}

@@ -61,8 +61,7 @@ const Feedback = () => {
         { applicationNumber, attendance },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      alert("Attendance updated successfully!");
-      fetchAcceptedRequests(); // Refresh the accepted requests list
+      fetchAcceptedRequests();
     } catch (error) {
       console.error("Error marking attendance:", error.message);
       alert("Failed to update attendance. Please try again.");
