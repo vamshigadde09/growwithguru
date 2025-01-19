@@ -6,6 +6,7 @@ import TeacherHeader from "../Header/TeacherHeader";
 
 const TeacherNotifications = () => {
   const [notifications, setNotifications] = useState([]);
+  const [reviews, setReviews] = useState({}); // Stores reviews by application number
   const [responseReasons, setResponseReasons] = useState({});
   const [editingType, setEditingType] = useState({}); // Keeps track of editing type (accept/reject)
   const [activeTab, setActiveTab] = useState("Pending");
@@ -25,6 +26,37 @@ const TeacherNotifications = () => {
       console.error("Error fetching notifications:", error.message);
     }
   };
+
+  // Fetch review for an application
+  const fetchReview = async (applicationNumber) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
+        `http://localhost:8080/api/v1/teacher/review/${applicationNumber}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setReviews((prev) => ({
+        ...prev,
+        [applicationNumber]: response.data.review,
+      }));
+    } catch (error) {
+      console.error(
+        `Error fetching review for ${applicationNumber}:`,
+        error.message
+      );
+    }
+  };
+
+  // Fetch reviews for completed notifications
+  useEffect(() => {
+    notifications
+      .filter((notification) => notification.status === "Completed")
+      .forEach((notification) => {
+        if (!reviews[notification.applicationNumber]) {
+          fetchReview(notification.applicationNumber);
+        }
+      });
+  }, [notifications]);
 
   // Handle input changes for acceptance/rejection
   const handleResponseChange = (applicationNumber, response) => {
@@ -195,8 +227,31 @@ const TeacherNotifications = () => {
                 </p>
               </div>
 
+              {/* Show review only for Completed status */}
+              {notification.status === "Completed" &&
+                reviews[notification.applicationNumber] && (
+                  <div className="student-review">
+                    <h3 className="review-header">Student Review:</h3>
+                    <p className="review-rating">
+                      <strong>Rating:</strong>{" "}
+                      {reviews[notification.applicationNumber].starRating ||
+                        "N/A"}{" "}
+                      / 5
+                    </p>
+                    <p className="review-comment">
+                      <strong>Comment:</strong>{" "}
+                      {reviews[notification.applicationNumber].reviewComment ||
+                        "N/A"}
+                    </p>
+                  </div>
+                )}
+
               <div className="notification-actions">
-                {editingType[notification.applicationNumber] ? (
+                {/* Hide actions for Completed status */}
+
+                {notification.status === "Completed" ? null : editingType[
+                    notification.applicationNumber
+                  ] ? (
                   <>
                     <textarea
                       placeholder={

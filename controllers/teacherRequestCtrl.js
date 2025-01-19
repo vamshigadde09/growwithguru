@@ -1,5 +1,6 @@
 const InterviewRequest = require("../models/interviewRequestModel");
 const TeacherProfile = require("../models/teacherporfile");
+const Review = require("../models/Review");
 
 // Fetch teacher notifications
 const getTeacherNotifications = async (req, res) => {
@@ -157,6 +158,30 @@ const feedback = async (req, res) => {
     res.status(500).json({ message: "Server error: " + error.message });
   }
 };
+const getReviewByApplicationNumber = async (req, res) => {
+  const { applicationNumber } = req.params;
+
+  try {
+    const interviewRequest = await InterviewRequest.findOne({
+      applicationNumber,
+    });
+    if (!interviewRequest) {
+      return res.status(404).json({ message: "Interview request not found." });
+    }
+
+    const review = await Review.findOne({
+      interviewRequestId: interviewRequest._id,
+    });
+    if (!review) {
+      return res.status(404).json({ message: "Review not found." });
+    }
+
+    res.status(200).json({ review });
+  } catch (error) {
+    console.error("Error fetching review:", error.message);
+    res.status(500).json({ message: `Server error: ${error.message}` });
+  }
+};
 
 module.exports = {
   getTeacherNotifications,
@@ -166,4 +191,5 @@ module.exports = {
   getTeacherDetails,
   feedback,
   attendance,
+  getReviewByApplicationNumber,
 };

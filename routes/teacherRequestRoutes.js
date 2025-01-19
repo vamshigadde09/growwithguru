@@ -7,6 +7,7 @@ const {
   getTeacherDetails,
   feedback,
   attendance,
+  getReviewByApplicationNumber,
 } = require("../controllers/teacherRequestCtrl");
 
 const authMiddleware = require("../middlewares/authMiddleware");
@@ -28,5 +29,10 @@ router.get("/availability", authMiddleware, getTeacherAvailability);
 router.get("/teacher/:id", authMiddleware, getTeacherDetails);
 router.post("/feedback", authMiddleware, feedback);
 router.put("/attendance", authMiddleware, attendance);
+router.get(
+  "/review/:applicationNumber",
+  authMiddleware,
+  getReviewByApplicationNumber
+);
 
 module.exports = router;

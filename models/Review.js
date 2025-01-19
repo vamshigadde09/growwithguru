@@ -17,14 +17,22 @@ const reviewSchema = new mongoose.Schema({
     max: 5,
     required: true,
   },
-
   reviewComment: {
     type: String,
     required: true,
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
+  reviewTitle: {
+    type: String,
+    maxlength: 100,
+  },
+  feedbackCategory: {
+    type: String,
+    enum: ["Technical", "Communication", "Problem Solving"],
+  },
+  status: {
+    type: String,
+    enum: ["Active", "Archived"],
+    default: "Active",
   },
 });
 
