@@ -10,6 +10,8 @@ const TeacherNotifications = () => {
   const [responseReasons, setResponseReasons] = useState({});
   const [editingType, setEditingType] = useState({}); // Keeps track of editing type (accept/reject)
   const [activeTab, setActiveTab] = useState("Pending");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5; // Display 5 applications per page
 
   // Fetch teacher notifications
   const fetchNotifications = async () => {
@@ -21,7 +23,11 @@ const TeacherNotifications = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      setNotifications(response.data.notifications);
+
+      // Sort notifications by createdAt or timestamp in descending order
+      const sortedNotifications = response.data.notifications.reverse();
+
+      setNotifications(sortedNotifications);
     } catch (error) {
       console.error("Error fetching notifications:", error.message);
     }
@@ -156,6 +162,12 @@ const TeacherNotifications = () => {
       console.error("Failed to fetch notifications:", error);
     });
   }, []);
+  const paginatedNotifications = filteredNotifications.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const totalPages = Math.ceil(filteredNotifications.length / itemsPerPage);
 
   return (
     <div className="notifications-container">
@@ -173,12 +185,12 @@ const TeacherNotifications = () => {
         ))}
       </div>
       <div className="notifications-list">
-        {filteredNotifications.length === 0 ? (
+        {paginatedNotifications.length === 0 ? (
           <p className="no-notifications">
             No notifications found under "{activeTab}" status.
           </p>
         ) : (
-          filteredNotifications.map((notification) => (
+          paginatedNotifications.map((notification) => (
             <div
               key={notification.applicationNumber}
               className="notification-card"
@@ -324,6 +336,21 @@ const TeacherNotifications = () => {
             </div>
           ))
         )}
+        <div className="pagination">
+          {Array.from({ length: totalPages }, (_, index) => index + 1).map(
+            (pageNumber) => (
+              <button
+                key={pageNumber}
+                onClick={() => setCurrentPage(pageNumber)}
+                className={`pagination-button ${
+                  currentPage === pageNumber ? "active" : ""
+                }`}
+              >
+                {pageNumber}
+              </button>
+            )
+          )}
+        </div>
       </div>
       <Footer />
     </div>
