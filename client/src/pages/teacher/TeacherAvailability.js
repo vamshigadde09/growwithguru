@@ -130,15 +130,30 @@ const TeacherAvailability = () => {
       })
       .catch((err) => console.error("Error fetching availability:", err));
   }, [predefinedSlots]);
+
   const toggleSlot = (day, index) => {
-    if (!isEditing) return;
+    if (!isEditing) {
+      return;
+    }
 
     setAvailability((prev) => {
       const updatedAvailability = { ...prev };
-      updatedAvailability[day][index] =
-        updatedAvailability[day][index] === "Free"
-          ? predefinedSlots[day][index]
-          : "Free";
+
+      if (updatedAvailability[day][index] === "Free") {
+        // Restore the correct predefined value
+        const originalValue = predefinedSlots[day]?.[index];
+        if (originalValue) {
+          updatedAvailability[day][index] = originalValue;
+        } else {
+          console.error(
+            `No predefined value found for Day: ${day}, Index: ${index}`
+          );
+        }
+      } else {
+        // Set the value to "Free"
+        updatedAvailability[day][index] = "Free";
+      }
+
       return updatedAvailability;
     });
   };
