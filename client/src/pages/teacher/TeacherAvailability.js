@@ -116,7 +116,7 @@ const TeacherAvailability = () => {
       })
       .then((res) => {
         const fetchedAvailability = res.data.data || [];
-        const updatedAvailability = { ...predefinedSlots };
+        const updatedAvailability = JSON.parse(JSON.stringify(predefinedSlots)); // Deep copy to avoid mutation
 
         fetchedAvailability.forEach((dayEntry) => {
           if (dayEntry && dayEntry.day && Array.isArray(dayEntry.freeSlots)) {
@@ -130,33 +130,6 @@ const TeacherAvailability = () => {
       })
       .catch((err) => console.error("Error fetching availability:", err));
   }, [predefinedSlots]);
-
-  const toggleSlot = (day, index) => {
-    if (!isEditing) {
-      return;
-    }
-
-    setAvailability((prev) => {
-      const updatedAvailability = { ...prev };
-
-      if (updatedAvailability[day][index] === "Free") {
-        // Restore the correct predefined value
-        const originalValue = predefinedSlots[day]?.[index];
-        if (originalValue) {
-          updatedAvailability[day][index] = originalValue;
-        } else {
-          console.error(
-            `No predefined value found for Day: ${day}, Index: ${index}`
-          );
-        }
-      } else {
-        // Set the value to "Free"
-        updatedAvailability[day][index] = "Free";
-      }
-
-      return updatedAvailability;
-    });
-  };
 
   const handleSaveAvailability = () => {
     const token = localStorage.getItem("token");
@@ -223,6 +196,29 @@ const TeacherAvailability = () => {
         {isFree ? "Free" : slotValue}
       </td>
     );
+  };
+
+  const toggleSlot = (day, index) => {
+    if (!isEditing) return;
+
+    // console.log(`Toggling slot for Day: ${day}, Index: ${index}`);
+
+    setAvailability((prev) => {
+      const updatedAvailability = { ...prev };
+      const currentValue = updatedAvailability[day][index];
+
+      // Log current state
+      // console.log(`Current value: ${currentValue}`);
+
+      // Toggle between "Free" and predefined slot
+      updatedAvailability[day][index] =
+        currentValue === "Free" ? predefinedSlots[day][index] : "Free";
+
+      // Log updated state
+      // console.log(`Updated value: ${updatedAvailability[day][index]}`);
+
+      return updatedAvailability;
+    });
   };
 
   return (

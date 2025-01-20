@@ -3,9 +3,12 @@ import axios from "axios";
 import "../styles/Homepage.css";
 import Footer from "./Footer/Footer";
 import Header from "./Header/Header";
+import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
   // login user data
+  const navigate = useNavigate();
+
   const getUserData = async () => {
     try {
       const token = localStorage.getItem("token"); // Get token from localStorage
@@ -114,6 +117,47 @@ const HomePage = () => {
             identify and work on my weaknesses. I landed my dream job right
             after graduation!" - Jane Smith, Electrical Engineering Graduate
           </blockquote>
+        </section>
+
+        <section className="interactive-section section">
+          <h1 className="interactive-title">
+            Discover Your Potential with GROW WITH GURU
+          </h1>
+          <p className="interactive-description">
+            Unlock your hidden strengths and identify areas for growth with our
+            specially curated quiz. Tailored for aspiring professionals, this
+            quick assessment provides actionable insights and recommendations to
+            help you excel in your career journey.
+          </p>
+          <ul className="interactive-highlights">
+            <li> Personalized feedback based on your quiz results.</li>
+            <li>
+              Tailored tips to enhance your technical, communication, and
+              problem-solving skills.
+            </li>
+            <li>Exclusive resources to help you prepare for your dream job.</li>
+          </ul>
+          <button className="cta-button">Take the Quiz Now</button>
+        </section>
+
+        <section className="cta-section section">
+          <h2 className="cta-title">Join the Success Stories of Thousands</h2>
+          <p className="cta-description">
+            Over 90% of our students report significant improvements in their
+            interview skills and confidence after working with our mentors.
+            Become part of a growing community dedicated to achieving career
+            success through guided preparation and structured learning.
+          </p>
+          <ul className="cta-benefits">
+            <li>
+              Learn from experienced educators and industry professionals.
+            </li>
+            <li>Access tools and resources tailored to your career goals.</li>
+            <li> Track your progress and celebrate your milestones.</li>
+          </ul>
+          <button className="cta-button" onClick={() => navigate("/register")}>
+            Start Your Journey Today
+          </button>
         </section>
 
         <section className="faq-section section">
