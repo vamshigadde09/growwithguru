@@ -44,7 +44,7 @@
   border-left: 6px solid #007bff;
   transition: all 0.2s ease;
   position: relative;
-}
+
 
 /* Feedback item hover effect */
 .feedback-item:hover {
@@ -137,6 +137,12 @@
   background: #f9f9fc;
   border-radius: 6px;
   border: 1px solid #dfe7f1;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  word-wrap: break-word;
+   
+}
 }
 
 /* Recommendation badge */

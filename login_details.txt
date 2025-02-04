@@ -10,122 +10,264 @@ password123
 
  D:\Projects_GWG\GROW-WITH-GURU-main\GROW-WITH-GURU-main\client\src\pages\student\MyApplications.js
 
+  const handleShare = async (applicationNumber) => {
+    const shareDetails = responseReasons[applicationNumber];
 
-        <div className="feedback-details">
-          <p className="feedback-topic">
-            <strong>Topic:</strong> {feedback.interviewRequestId?.topic}
-          </p>
-          <p className="feedback-date">
-            <strong>Date:</strong>{" "}
-            {new Date(feedback.interviewRequestId?.date).toLocaleDateString()}
-          </p>
-        </div>
-        <div>
-          <div className="detailed-feedback">
-            <h4 className="detailed-feedback-title">Detailed Feedback</h4>
-            <p className="feedback-communication-skills">
-              <strong>Communication Skills:</strong>{" "}
-              <span className="feedback-communication-skills-value">
-                {feedback.communicationSkills}
-              </span>
-            </p>
-            <p className="feedback-technical-knowledge">
-              <strong>Technical Knowledge:</strong>{" "}
-              <span className="feedback-technical-knowledge-value">
-                {feedback.technicalKnowledge}
-              </span>
-            </p>
-            <p className="feedback-problem-solving">
-              <strong>Problem-Solving Ability:</strong>{" "}
-              <span className="feedback-problem-solving-value">
-                {feedback.problemSolvingAbility}
-              </span>
-            </p>
-            <p className="feedback-confidence-body-language">
-              <strong>Confidence and Body Language:</strong>{" "}
-              <span className="feedback-confidence-body-language-value">
-                {feedback.confidenceAndBodyLanguage}
-              </span>
-            </p>
-            <p className="feedback-time-management">
-              <strong>Time Management:</strong>{" "}
-              <span className="feedback-time-management-value">
-                {feedback.timeManagement}
-              </span>
-            </p>
-            <p className="feedback-overall-performance">
-              <strong>Overall Performance:</strong>{" "}
-              <span className="feedback-overall-performance-value">
-                {feedback.overallPerformance}
-              </span>
-            </p>
-            <p className="feedback-strengths">
-              <strong>Strengths:</strong>{" "}
-              <span className="feedback-strengths-value">
-                {feedback.strengths}
-              </span>
-            </p>
-            <p className="feedback-areas-for-improvement">
-              <strong>Areas for Improvement:</strong>{" "}
-              <span className="feedback-areas-for-improvement-value">
-                {feedback.areasForImprovement}
-              </span>
-            </p>
-            <p className="feedback-opening-statement">
-              <strong>Opening Statement:</strong>{" "}
-              <span className="feedback-opening-statement-value">
-                {feedback.detailedFeedback?.openingStatement}
-              </span>
-            </p>
-            <p className="feedback-technical-analysis">
-              <strong>Technical Analysis:</strong>{" "}
-              <span className="feedback-technical-analysis-value">
-                {feedback.detailedFeedback?.technicalAnalysis}
-              </span>
-            </p>
-            <p className="feedback-problem-solving-discussion">
-              <strong>Problem Solving Discussion:</strong>{" "}
-              <span className="feedback-problem-solving-discussion-value">
-                {feedback.detailedFeedback?.problemSolvingDiscussion}
-              </span>
-            </p>
-            <p className="feedback-communication-observations">
-              <strong>Communication Observations:</strong>{" "}
-              <span className="feedback-communication-observations-value">
-                {feedback.detailedFeedback?.communicationObservations}
-              </span>
-            </p>
-            <p className="feedback-behavioral-assessment">
-              <strong>Behavioral Assessment:</strong>{" "}
-              <span className="feedback-behavioral-assessment-value">
-                {feedback.detailedFeedback?.behavioralAssessment}
-              </span>
-            </p>
-            <p className="feedback-closing-remarks">
-              <strong>Closing Remarks:</strong>{" "}
-              <span className="feedback-closing-remarks-value">
-                {feedback.detailedFeedback?.closingRemarks}
-              </span>
-            </p>
-          </div>
-        </div>
-        <div className="additional-feedback">
-          <p className="feedback-actionable-suggestions">
-            <strong>Actionable Suggestions:</strong>{" "}
-            <span className="feedback-actionable-suggestions-value">
-              {feedback.actionableSuggestions.join(", ")}
-            </span>
-          </p>
-          <p className="feedback-additional-comments">
-            <strong>Additional Comments:</strong>{" "}
-            <span className="feedback-additional-comments-value">
-              {feedback.additionalComments}
-            </span>
-          </p>
-          <p className="feedback-recommendation">
-            <strong>Recommendation:</strong>{" "}
-            <span className="feedback-recommendation-value">
-              {feedback.recommendation ? "Yes" : "No"}
-            </span>
-          </p>
-        </div>
+    if (!shareDetails || !selectedTeacher || !StudentshareDetails) {
+      alert("Please select a teacher and provide a reason for sharing.");
+      return;
+    }
+    if (!shareDetails || !selectedTeacher || !StudentshareDetails.trim()) {
+      alert("Please provide student sharing details.");
+      return;
+    }
+
+    const teacherId = selectedTeacher.id || selectedTeacher._id; // Adjust field as per your backend structure
+
+    try {
+      console.log("Request Payload:", {
+        applicationNumber,
+        teacherId,
+        shareDetails,
+        StudentshareDetails,
+        newTeacherId: teacherId,
+      });
+
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        `/api/v1/interview/share`,
+        {
+          applicationNumber,
+          teacherId,
+          shareDetails,
+          StudentshareDetails,
+          newTeacherId: teacherId,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      alert(response.data.message || "Shared successfully!");
+      updateNotificationStatus(applicationNumber, "Shared");
+      setEditingType({});
+    } catch (error) {
+      console.error("Error sharing notification:", error.message);
+      alert(error.response?.data?.message || "Failed to share.");
+    }
+  };
+
+
+
+const shareInterviewRequest = async (req, res) => {
+  const { applicationNumber, newTeacherId, shareDetails, StudentshareDetails } =
+    req.body;
+  if (
+    !applicationNumber ||
+    !newTeacherId ||
+    !shareDetails ||
+    !StudentshareDetails
+  ) {
+    return res.status(400).json({
+      message:
+        "All fields (applicationNumber, newTeacherId, shareDetails, StudentshareDetails) are required.",
+    });
+  }
+
+  try {
+    const interview = await InterviewRequest.findOne({ applicationNumber });
+
+    if (!interview) {
+      return res.status(404).json({ message: "Application not found." });
+    }
+
+    // Add the new teacher to the interview request
+    interview.teacher.push({
+      teacherId: newTeacherId,
+      shareDetails,
+      StudentshareDetails,
+      status: "Pending",
+    });
+
+    // Save the updated interview request
+    await interview.save();
+
+    // Notify the new teacher (you can implement a notification logic here)
+    const teacher = await TeacherProfile.findById(newTeacherId);
+    if (teacher) {
+      teacher.notifications.push({
+        type: "Shared Interview Request",
+        applicationNumber,
+        details: { shareDetails, StudentshareDetails },
+      });
+
+      await teacher.save();
+    }
+
+    res.status(200).json({
+      message: "Application shared successfully.",
+      success: true,
+    });
+  } catch (error) {
+    console.error("Error sharing interview request:", error.message);
+    res.status(500).json({ message: "Server error: " + error.message });
+  }
+};
+
+
+
+
+  const handleShare = async (applicationNumber) => {
+    const shareDetails = responseReasons[applicationNumber];
+    const teacherId = selectedTeacher.id || selectedTeacher._id;
+
+    console.log("Sharing application:", {
+      applicationNumber,
+      teacherId,
+      shareDetails,
+      StudentshareDetails,
+    }); // Log sharing details
+
+    if (!shareDetails || !teacherId || !StudentshareDetails.trim()) {
+      console.log("Missing required fields:", {
+        shareDetails,
+        teacherId,
+        StudentshareDetails,
+      }); // Log missing input
+      alert("Please fill all required fields.");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      console.log("Sending API request with token:", token); // Log token
+
+      const response = await axios.post(
+        "http://localhost:8080/api/v1/interview/share",
+        {
+          applicationNumber,
+          teacherId,
+          shareDetails,
+          StudentshareDetails,
+          newTeacherId: teacherId,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      console.log("API response:", response.data); // Log API response
+
+      // Update notification status locally
+      setNotifications((prev) =>
+        prev.map((notification) =>
+          notification.applicationNumber === applicationNumber
+            ? { ...notification, status: "Shared" }
+            : notification
+        )
+      );
+
+      console.log("Updated notifications state."); // Log state update
+
+      alert(response.data.message || "Shared successfully!");
+    } catch (error) {
+      console.error(
+        "Error sharing notification:",
+        error.response?.data?.message
+      ); // Log error response
+      alert(error.response?.data?.message || "Failed to share.");
+    }
+  };
+
+const shareInterviewRequest = async (req, res) => {
+  const { applicationNumber, newTeacherId, shareDetails, StudentshareDetails } =
+    req.body;
+
+  console.log("Received request body:", req.body);
+
+  if (
+    !applicationNumber ||
+    !newTeacherId ||
+    !shareDetails ||
+    !StudentshareDetails
+  ) {
+    console.log("Missing required fields:", {
+      applicationNumber,
+      newTeacherId,
+      shareDetails,
+      StudentshareDetails,
+    });
+    return res.status(400).json({
+      message:
+        "Missing required fields: applicationNumber, newTeacherId, shareDetails, StudentshareDetails.",
+    });
+  }
+
+  try {
+    const interview = await InterviewRequest.findOne({ applicationNumber });
+    console.log("Fetched interview:", interview);
+
+    if (!interview) {
+      console.log(
+        "Application not found for applicationNumber:",
+        applicationNumber
+      );
+      return res.status(404).json({ message: "Application not found." });
+    }
+
+    if (interview.status === "Shared") {
+      console.log("Application already shared:", applicationNumber);
+      return res
+        .status(400)
+        .json({ message: "This application has already been shared." });
+    }
+
+    const existingTeacher = interview.teacher.find(
+      (teacher) => teacher.teacherId.toString() === newTeacherId
+    );
+
+    if (existingTeacher) {
+      console.log("Teacher already associated with this application:", {
+        newTeacherId,
+        applicationNumber,
+      });
+      return res.status(400).json({
+        message:
+          "This application is already shared with the selected teacher.",
+      });
+    }
+
+    interview.teacher.push({
+      teacherId: newTeacherId,
+      shareDetails,
+      StudentshareDetails,
+      status: "Shared",
+    });
+
+    interview.status = "Shared"; // Update global status
+    await interview.save();
+
+    // Log the updated interview object to ensure the changes are saved
+    const updatedInterview = await InterviewRequest.findOne({
+      applicationNumber,
+    });
+    console.log("Updated interview status:", updatedInterview.status); // Log updated status
+
+    const teacher = await TeacherProfile.findById(newTeacherId);
+    if (teacher) {
+      teacher.notifications.push({
+        type: "Shared Interview Request",
+        applicationNumber,
+        details: { shareDetails, StudentshareDetails },
+      });
+      await teacher.save();
+      console.log("Teacher notified:", teacher); // Log teacher notification
+    }
+
+    res.status(200).json({
+      message: "Application shared successfully.",
+      success: true,
+    });
+  } catch (error) {
+    console.error("Error in shareInterviewRequest:", error.message);
+    res.status(500).json({ message: "Server error: " + error.message });
+  }
+};

@@ -3,7 +3,8 @@ import axios from "axios";
 import "../../styles/TeacherNotifications.css";
 import Footer from "../Footer/Footer";
 import TeacherHeader from "../Header/TeacherHeader";
-
+import Autocomplete from "@mui/material/Autocomplete";
+import TextField from "@mui/material/TextField";
 const TeacherNotifications = () => {
   const [notifications, setNotifications] = useState([]);
   const [reviews, setReviews] = useState({}); // Stores reviews by application number
@@ -12,6 +13,10 @@ const TeacherNotifications = () => {
   const [activeTab, setActiveTab] = useState("Pending");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5; // Display 5 applications per page
+  const [suggestedTeachers, setSuggestedTeachers] = useState([]);
+  const [selectedTeacher, setSelectedTeacher] = useState("");
+  const [StudentshareDetails, setStudentshareDetails] = useState("");
+  const [shareDetails, setShareDetails] = useState("");
 
   // Fetch teacher notifications
   const fetchNotifications = async () => {
@@ -26,6 +31,12 @@ const TeacherNotifications = () => {
 
       // Sort notifications by createdAt or timestamp in descending order
       const sortedNotifications = response.data.notifications.reverse();
+
+      const notifications = response.data.notifications.map((notification) => ({
+        ...notification,
+        status: notification.status || "Pending", // Ensure fallback for missing statuses
+      }));
+      setNotifications(notifications);
 
       setNotifications(sortedNotifications);
     } catch (error) {
@@ -45,11 +56,104 @@ const TeacherNotifications = () => {
         ...prev,
         [applicationNumber]: response.data.review,
       }));
+    } catch (error) {}
+  };
+
+  const handleShare = async (applicationNumber) => {
+    console.log("Sharing application:", {
+      applicationNumber,
+      newTeacherId: selectedTeacher?.id || selectedTeacher?._id,
+      shareDetails,
+      StudentshareDetails,
+    });
+
+    if (
+      !shareDetails.trim() ||
+      !StudentshareDetails.trim() ||
+      !selectedTeacher
+    ) {
+      alert("Please fill in all fields.");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        "http://localhost:8080/api/v1/interview/share",
+        {
+          applicationNumber,
+          newTeacherId: selectedTeacher.id || selectedTeacher._id,
+          shareDetails,
+          StudentshareDetails,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      console.log("API response:", response.data);
+
+      // Update notification state locally
+      setNotifications((prevNotifications) =>
+        prevNotifications.map((notification) =>
+          notification.applicationNumber === applicationNumber
+            ? {
+                ...notification,
+                status: "Shared", // Update global status
+                teacher: response.data.data.teacher, // Update teacher array
+              }
+            : notification
+        )
+      );
+
+      alert(response.data.message || "Application shared successfully!");
     } catch (error) {
       console.error(
-        `Error fetching review for ${applicationNumber}:`,
-        error.message
+        "Error sharing notification:",
+        error.response?.data?.message
       );
+      alert(error.response?.data?.message || "Failed to share.");
+    }
+    fetchNotifications();
+  };
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(
+          "http://localhost:8080/api/v1/teacher/notifications",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setNotifications(notifications);
+      } catch (error) {
+        console.error("Error fetching notifications:", error.message);
+      }
+    };
+    fetchNotifications();
+  }, []);
+
+  const fetchSuggestedTeachers = async (name) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
+        "http://localhost:8080/api/v1/user/searchTeachers",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { name },
+        }
+      );
+      setSuggestedTeachers(response.data.data);
+    } catch (error) {
+      console.error("Error fetching suggested teachers:", error.message);
+    }
+  };
+
+  const handleSearchTermChange = (value) => {
+    if (value.trim()) {
+      fetchSuggestedTeachers(value);
+    } else {
+      setSuggestedTeachers([]);
     }
   };
 
@@ -62,7 +166,7 @@ const TeacherNotifications = () => {
           fetchReview(notification.applicationNumber);
         }
       });
-  }, [notifications]);
+  }, [notifications, reviews]);
 
   // Handle input changes for acceptance/rejection
   const handleResponseChange = (applicationNumber, response) => {
@@ -105,7 +209,6 @@ const TeacherNotifications = () => {
 
       // Update the global status to Rejected
       updateNotificationStatus(applicationNumber, "Rejected");
-
       // Update the state to reflect the rejected status
       setNotifications((prevNotifications) =>
         prevNotifications.map((notification) =>
@@ -114,7 +217,7 @@ const TeacherNotifications = () => {
             : notification
         )
       );
-
+      await fetchNotifications();
       setEditingType({}); // Clear editing state
     } catch (error) {
       console.error("Error rejecting application:", error.message);
@@ -174,15 +277,17 @@ const TeacherNotifications = () => {
       <TeacherHeader />
       <h1 className="notifications-header">Teacher Notifications</h1>
       <div className="tabs">
-        {["Pending", "Accepted", "Rejected", "Completed"].map((status) => (
-          <button
-            key={status}
-            className={`tab-button ${activeTab === status ? "active" : ""}`}
-            onClick={() => setActiveTab(status)}
-          >
-            {status}
-          </button>
-        ))}
+        {["Pending", "Accepted", "Rejected", "Completed", "Shared"].map(
+          (status) => (
+            <button
+              key={status}
+              className={`tab-button ${activeTab === status ? "active" : ""}`}
+              onClick={() => setActiveTab(status)}
+            >
+              {status}
+            </button>
+          )
+        )}
       </div>
       <div className="notifications-list">
         {paginatedNotifications.length === 0 ? (
@@ -259,79 +364,162 @@ const TeacherNotifications = () => {
                 )}
 
               <div className="notification-actions">
-                {/* Hide actions for Completed status */}
+                {/* Hide Accept and Reject buttons for statuses other than Pending */}
+                {notification.status === "Pending" &&
+                  (editingType[notification.applicationNumber] ? (
+                    <>
+                      <textarea
+                        placeholder={
+                          editingType[notification.applicationNumber] ===
+                          "Reject"
+                            ? "Enter rejection reason"
+                            : "Enter acceptance response"
+                        }
+                        value={
+                          responseReasons[notification.applicationNumber] || ""
+                        }
+                        onChange={(e) =>
+                          handleResponseChange(
+                            notification.applicationNumber,
+                            e.target.value
+                          )
+                        }
+                      />
+                      <button
+                        onClick={() =>
+                          editingType[notification.applicationNumber] ===
+                          "Reject"
+                            ? handleRejection(
+                                notification.applicationNumber,
+                                notification.teacherId
+                              )
+                            : handleAccept(
+                                notification.applicationNumber,
+                                notification.teacherId
+                              )
+                        }
+                      >
+                        Submit
+                      </button>
+                      <button
+                        onClick={() =>
+                          setEditingType((prev) => ({
+                            ...prev,
+                            [notification.applicationNumber]: null,
+                          }))
+                        }
+                        style={{ marginLeft: "10px" }}
+                      >
+                        Cancel
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() =>
+                          setEditingType((prev) => ({
+                            ...prev,
+                            [notification.applicationNumber]: "Accept",
+                          }))
+                        }
+                      >
+                        Accept
+                      </button>
+                      <button
+                        onClick={() =>
+                          setEditingType((prev) => ({
+                            ...prev,
+                            [notification.applicationNumber]: "Reject",
+                          }))
+                        }
+                      >
+                        Reject
+                      </button>
+                    </>
+                  ))}
 
-                {notification.status === "Completed" ? null : editingType[
-                    notification.applicationNumber
-                  ] ? (
-                  <>
-                    <textarea
-                      placeholder={
-                        editingType[notification.applicationNumber] === "Reject"
-                          ? "Enter rejection reason"
-                          : "Enter acceptance response"
-                      }
-                      value={
-                        responseReasons[notification.applicationNumber] || ""
-                      }
-                      onChange={(e) =>
-                        handleResponseChange(
-                          notification.applicationNumber,
-                          e.target.value
-                        )
-                      }
-                    />
-                    <button
-                      onClick={() =>
-                        editingType[notification.applicationNumber] === "Reject"
-                          ? handleRejection(
-                              notification.applicationNumber,
-                              notification.teacherId
-                            )
-                          : handleAccept(
-                              notification.applicationNumber,
-                              notification.teacherId
-                            )
-                      }
-                    >
-                      Submit
-                    </button>
-                    <button
-                      onClick={() =>
-                        setEditingType((prev) => ({
-                          ...prev,
-                          [notification.applicationNumber]: null,
-                        }))
-                      }
-                      style={{ marginLeft: "10px" }}
-                    >
-                      Cancel
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button
-                      onClick={() =>
-                        setEditingType((prev) => ({
-                          ...prev,
-                          [notification.applicationNumber]: "Accept",
-                        }))
-                      }
-                    >
-                      Accept
-                    </button>
-                    <button
-                      onClick={() =>
-                        setEditingType((prev) => ({
-                          ...prev,
-                          [notification.applicationNumber]: "Reject",
-                        }))
-                      }
-                    >
-                      Reject
-                    </button>
-                  </>
-                )}
+                {/* Show Share button only for "Accepted" notifications */}
+                <div className="notification-actions">
+                  {/* Show Share button only for "Accepted" notifications */}
+                  {notification.status === "Accepted" && (
+                    <>
+                      <button
+                        onClick={() =>
+                          setEditingType((prev) => ({
+                            ...prev,
+                            [notification.applicationNumber]: "Share",
+                          }))
+                        }
+                      >
+                        Share
+                      </button>
+                      {editingType[notification.applicationNumber] ===
+                        "Share" && (
+                        <>
+                          <Autocomplete
+                            options={suggestedTeachers}
+                            getOptionLabel={(option) =>
+                              option.name || "No Name"
+                            } // Adjust based on actual teacher object
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label="Search Teacher"
+                                placeholder="Type a teacher's name"
+                                variant="outlined"
+                                onChange={(e) =>
+                                  handleSearchTermChange(e.target.value)
+                                }
+                              />
+                            )}
+                            onChange={(event, newValue) => {
+                              if (newValue) {
+                                setSelectedTeacher(newValue); // Set the selected teacher object
+                              } else {
+                                setSelectedTeacher(null); // Handle case where selection is cleared
+                              }
+                            }}
+                            style={{ marginBottom: "10px" }}
+                          />
+
+                          <textarea
+                            placeholder="Enter reason for sharing"
+                            value={shareDetails}
+                            onChange={(e) => setShareDetails(e.target.value)} // Update shareDetails state
+                          />
+                          <textarea
+                            placeholder="Enter student sharing details"
+                            value={StudentshareDetails}
+                            onChange={(e) =>
+                              setStudentshareDetails(e.target.value)
+                            } // Update StudentshareDetails state
+                          />
+                          <button
+                            onClick={() =>
+                              handleShare(
+                                notification.applicationNumber,
+                                selectedTeacher
+                              )
+                            }
+                          >
+                            Submit
+                          </button>
+                          <button
+                            onClick={() =>
+                              setEditingType((prev) => ({
+                                ...prev,
+                                [notification.applicationNumber]: null,
+                              }))
+                            }
+                            style={{ marginLeft: "10px" }}
+                          >
+                            Cancel
+                          </button>
+                        </>
+                      )}
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           ))

@@ -33,6 +33,7 @@ const FeedbackView = () => {
       );
       setFeedbacks(sortedFeedbacks);
     } catch (err) {
+      console.error("Error fetching feedbacks:", err);
       setError(err.response?.data?.message || "Failed to load feedbacks.");
     } finally {
       setLoading(false);

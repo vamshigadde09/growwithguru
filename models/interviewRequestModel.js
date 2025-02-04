@@ -32,7 +32,7 @@ const interviewRequestSchema = new mongoose.Schema(
     notes: { type: String, default: "" },
     status: {
       type: String,
-      enum: ["Pending", "Accepted", "Rejected", "Completed"],
+      enum: ["Pending", "Accepted", "Rejected", "Completed", "Shared"],
       default: "Pending",
     },
     attendance: {
@@ -53,10 +53,16 @@ const interviewRequestSchema = new mongoose.Schema(
         },
         rejectionReason: { type: String, default: "" },
         acceptedResponse: { type: String, default: "" },
+        shareDetails: { type: String, default: "" },
+        StudentshareDetails: { type: String, default: "" },
         status: {
           type: String,
-          enum: ["Accepted", "Rejected", "Pending", "Completed"],
+          enum: ["Accepted", "Rejected", "Pending", "Completed", "Shared"],
           default: "Pending",
+        },
+        detailsshared: {
+          type: Boolean,
+          default: false,
         },
       },
     ],

@@ -12,10 +12,14 @@ const getTeacherNotifications = async (req, res) => {
       return res.status(404).json({ message: "Teacher profile not found" });
     }
 
-    const notifications = teacher.notifications.map((notification) => ({
-      ...notification.toObject(),
-      teacherId: teacher._id, // Attach the teacher's ID to each notification
-    }));
+    const notifications = teacher.notifications.map((notification) => {
+      const currentTeacherStatus = notification.status || "Pending"; // Default to "Pending" if not set
+      return {
+        ...notification.toObject(),
+        teacherId: teacher._id, // Attach the teacher's ID
+        status: currentTeacherStatus, // Use the updated status from the database
+      };
+    });
 
     res.status(200).json({ notifications });
   } catch (error) {

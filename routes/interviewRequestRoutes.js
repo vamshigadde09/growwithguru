@@ -11,6 +11,7 @@ const {
   getFeedbackForStudent,
   deleteStudentInterviewRequest,
   submitReview,
+  shareInterviewRequest,
 } = require("../controllers/interviewRequestCtrl");
 const authMiddleware = require("../middlewares/authMiddleware");
 
@@ -27,5 +28,6 @@ router.get("/acceptedRequests", authMiddleware, getAcceptedRequests);
 router.get("/studentFeedback", authMiddleware, getFeedbackForStudent);
 router.delete("/studentRequests/:applicationId", deleteStudentInterviewRequest);
 router.post("/submit", authMiddleware, submitReview);
+router.post("/share", authMiddleware, shareInterviewRequest);
 
 module.exports = router;

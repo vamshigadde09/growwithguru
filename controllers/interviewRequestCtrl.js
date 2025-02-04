@@ -194,7 +194,6 @@ const acceptInterviewRequest = async (req, res) => {
     const teacherEntry = interview.teacher.find(
       (t) => t.teacherId.toString() === teacherId
     );
-
     teacherEntry.status = "Accepted";
     teacherEntry.acceptedResponse = acceptedResponse;
 
@@ -387,6 +386,7 @@ const getFeedbackForStudent = async (req, res) => {
         };
       })
     );
+    console.log("Fetching feedbacks for studentId:", studentId);
 
     res.status(200).json({
       message: "Feedback fetched successfully",
@@ -470,6 +470,83 @@ const submitReview = async (req, res) => {
   }
 };
 
+const shareInterviewRequest = async (req, res) => {
+  const { applicationNumber, newTeacherId, shareDetails, StudentshareDetails } =
+    req.body;
+
+  if (
+    !applicationNumber ||
+    !newTeacherId ||
+    !shareDetails ||
+    !StudentshareDetails
+  ) {
+    return res.status(400).json({
+      message:
+        "Missing required fields: applicationNumber, newTeacherId, shareDetails, StudentshareDetails.",
+    });
+  }
+
+  try {
+    const interview = await InterviewRequest.findOne({ applicationNumber });
+
+    if (!interview) {
+      return res.status(404).json({ message: "Application not found." });
+    }
+
+    // Update current teacher's status to "Shared"
+    const currentTeacher = interview.teacher.find(
+      (teacher) => teacher.status === "Accepted"
+    );
+    if (currentTeacher) {
+      currentTeacher.status = "Shared";
+    }
+
+    // Add the new teacher with all application details
+    interview.teacher.push({
+      teacherId: newTeacherId,
+      shareDetails,
+      StudentshareDetails,
+      status: "Shared",
+    });
+
+    // Update global application status
+    interview.status = "Shared";
+
+    await interview.save();
+
+    // Notify the new teacher
+    const teacher = await TeacherProfile.findById(newTeacherId);
+    if (teacher) {
+      teacher.notifications.push({
+        type: "Shared Interview Request",
+        applicationNumber,
+        details: {
+          email: interview.email,
+          topic: interview.topic,
+          skills: interview.skills,
+          interviewType: interview.interviewType,
+          experienceLevel: interview.experienceLevel,
+          date: interview.date,
+          startTime: interview.startTime,
+          interviewMode: interview.interviewMode,
+          shareDetails,
+          StudentshareDetails,
+        },
+        status: "Shared",
+      });
+      await teacher.save();
+    }
+
+    res.status(200).json({
+      message: "Application shared successfully.",
+      success: true,
+      data: interview,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error: " + error.message });
+  }
+};
+
 module.exports = {
   createInterviewRequest,
   getStudentInterviewRequests,
@@ -482,4 +559,5 @@ module.exports = {
   getFeedbackForStudent,
   deleteStudentInterviewRequest,
   submitReview,
+  shareInterviewRequest,
 };
