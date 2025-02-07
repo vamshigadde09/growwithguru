@@ -1,0 +1,37 @@
+<!-- first time git push -->
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/vamshigadde09/growwithguru.git
+git push -u origin main
+
+
+
+
+
+
+<!-- to check branch -->
+git branch
+
+<!-- Create a new branch: -->
+git branch <branch-name>
+
+<!-- Switch to the new branch: -->
+git checkout <branch-name>
+
+<!-- Alternatively, you can combine both steps in one command: -->
+git checkout -b <branch-name>
+
+
+
+  <!-- to remove previous origin -->
+git remote remove origin
+
+git remote add origin "https://github.com/vamshigadde09/growwithguru.git"
+
+git add .
+
+git commit -m "2_commit( )"
+
+git push -u origin test2

@@ -1,0 +1,296 @@
+/* General feedback container styling */
+.feedback-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #f9f9fc;
+  border-radius: 8px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.4s ease-in-out;
+}
+.feedback-container h1 {
+  font-size: 2rem;
+  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
+  font-family: 'Arial', sans-serif;
+  font-weight: bold;
+  border-bottom: 2px solid #007bff;
+  display: inline-block;
+  padding-bottom: 5px;
+}
+
+
+/* Feedback header */
+.feedback-header {
+  font-size: 1.6em;
+  font-weight: 600;
+  text-align: center;
+  color: #0056b3;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e3e3e3;
+  padding-bottom: 10px;
+  letter-spacing: 0.8px;
+}
+
+/* Feedback item container */
+.feedback-item {
+  background: linear-gradient(145deg, #ffffff, #f0f4ff);
+  padding: 20px;
+  max-width: 1000px;
+  margin: 15px auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border-left: 6px solid #007bff;
+  transition: all 0.2s ease;
+  position: relative;
+
+
+/* Feedback item hover effect */
+.feedback-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Feedback title */
+.feedback-title {
+  font-size: 1.4em;
+  font-weight: 600;
+  color: #0056b3;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e0e6f1;
+}
+
+.feedback-title::before {
+  content: "📝";
+  margin-right: 6px;
+  font-size: 1.2em;
+  color: #0073e6;
+}
+
+/* Section headers */
+.detailed-feedback h4,
+.additional-feedback h4 {
+  font-size: 1.2em;
+  color: #0049aa;
+  font-weight: 500;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #e0e6f1;
+  padding-bottom: 5px;
+}
+
+/* Detailed feedback sections */
+.detailed-feedback,
+.additional-feedback,
+.feedback-details {
+  padding: 15px;
+  margin-top: 15px;
+  border-radius: 8px;
+  border: 1px solid #e3e7f5;
+  background: #f5f9ff;
+  line-height: 1.6;
+}
+
+/* Paragraph styling for feedback sections */
+.feedback-details p,
+.detailed-feedback p,
+.additional-feedback p {
+  font-size: 0.9em;
+  margin: 10px 0;
+  color: #333;
+}
+
+/* Strong text styling for labels */
+.feedback-details strong,
+.detailed-feedback strong,
+.additional-feedback strong {
+  color: #0056b3;
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+/* Strengths and Areas for Improvement sections */
+.feedback-strengths p,
+.feedback-areas-for-improvement p {
+  font-size: 0.9em;
+  margin: 8px 0;
+  line-height: 1.4;
+  color: #333;
+}
+
+/* Actionable Suggestions and Additional Comments */
+.feedback-actionable-suggestions,
+.feedback-additional-comments,
+.feedback-strengths,
+.feedback-areas-for-improvement,
+.feedback-opening-statement,
+.feedback-technical-analysis,
+.feedback-problem-solving-discussion,
+.feedback-communication-observations,
+.feedback-behavioral-assessment,
+.feedback-closing-remarks {
+  padding: 12px;
+  margin-top: 10px;
+  background: #f9f9fc;
+  border-radius: 6px;
+  border: 1px solid #dfe7f1;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  word-wrap: break-word;
+   
+}
+}
+
+/* Recommendation badge */
+.feedback-status {
+  display: block;
+  text-align: center;
+  padding: 8px 16px;
+  margin: 15px auto 0;
+  border-radius: 15px;
+  font-size: 0.9em;
+  font-weight: bold;
+  color: #fff;
+  background-color: #28a745;
+  width: fit-content;
+}
+
+.feedback-status.recommendation-no {
+  background-color: #dc3545;
+}
+
+/* Add spacing between key sections */
+.detailed-feedback > p + p,
+.additional-feedback > p + p {
+  margin-top: 10px;
+}
+
+/* Improved spacing for bullet points and lists */
+.feedback-details p::before,
+.detailed-feedback p::before,
+.additional-feedback p::before {
+  content: "⬤";
+  color: #007bff;
+  font-size: 0.7em;
+  margin-right: 6px;
+}
+
+.feedback-actionable-suggestions li {
+  font-size: 0.9em;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.feedback-actionable-suggestions li::before {
+  content: "✔";
+  color: #28a745;
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+/* Improved readability for detailed sections */
+.feedback-detailed-section {
+  margin-top: 15px;
+  padding: 12px;
+  background: #eef5ff;
+  border-radius: 6px;
+  border: 1px solid #d3e4ff;
+}
+
+/* Responsive design improvements */
+@media (max-width: 768px) {
+  .feedback-header {
+    font-size: 1.4em;
+  }
+
+  .feedback-title {
+    font-size: 1.2em;
+  }
+
+  .feedback-details p,
+  .detailed-feedback p,
+  .additional-feedback p {
+    font-size: 0.85em;
+  }
+}
+.feedback-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.feedback-button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.feedback-button:hover {
+  background-color: #0056b3;
+}
+
+.close-button {
+  background-color: #dc3545; /* Red color for close */
+}
+
+.close-button:hover {
+  background-color: #a71d2a;
+}
+
+
+  
+/* Subtle animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.review-submitted-message {
+  color: #4caf50; /* Green color to indicate success */
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 10px;
+  padding: 5px 10px;
+  border: 1px solid #4caf50; /* Optional: border matching the text color */
+  border-radius: 5px;
+  background-color: #e8f5e9; /* Light green background */
+  text-align: center; /* Center-align the text */
+}
+
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pagination-button {
+  margin: 0 5px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  background-color: #91b8dd;
+  cursor: pointer;
+}
+
+.pagination-button.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.pagination-button:hover {
+  background-color: #e9ecef;
+}
