@@ -91,18 +91,8 @@ const TeacherNotifications = () => {
 
       console.log("API response:", response.data);
 
-      // Update notification state locally
-      setNotifications((prevNotifications) =>
-        prevNotifications.map((notification) =>
-          notification.applicationNumber === applicationNumber
-            ? {
-                ...notification,
-                status: "Shared", // Update global status
-                teacher: response.data.data.teacher, // Update teacher array
-              }
-            : notification
-        )
-      );
+      // **Ensure the notification state updates correctly**
+      fetchNotifications(); // Refresh the notifications immediately
 
       alert(response.data.message || "Application shared successfully!");
     } catch (error) {
@@ -112,7 +102,6 @@ const TeacherNotifications = () => {
       );
       alert(error.response?.data?.message || "Failed to share.");
     }
-    fetchNotifications();
   };
 
   useEffect(() => {
@@ -256,9 +245,23 @@ const TeacherNotifications = () => {
   };
 
   // Filter notifications based on the active tab
-  const filteredNotifications = notifications.filter(
-    (notification) => notification.status === activeTab
-  );
+
+  const filteredNotifications = notifications.filter((notification) => {
+    if (activeTab === "Shared") {
+      return notification.status === "Shared"; // Show only shared notifications
+    } else if (activeTab === "Sent" && activeTab === "Shared") {
+      return (
+        notification.status === "Shared" &&
+        notification.sentReceivedStatus === "Sent"
+      );
+    } else if (activeTab === "Received" && activeTab === "Shared") {
+      return (
+        notification.status === "Shared" &&
+        notification.sentReceivedStatus === "Received"
+      );
+    }
+    return notification.status === activeTab;
+  });
 
   useEffect(() => {
     fetchNotifications().catch((error) => {
@@ -289,6 +292,22 @@ const TeacherNotifications = () => {
           )
         )}
       </div>
+
+      {/* Show "Sent" and "Received" tabs ONLY when "Shared" is active */}
+      {activeTab === "Shared" && (
+        <div className="tabs">
+          {["Sent", "Received"].map((status) => (
+            <button
+              key={status}
+              className={`tab-button ${activeTab === status ? "active" : ""}`}
+              onClick={() => setActiveTab(status)}
+            >
+              {status}
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className="notifications-list">
         {paginatedNotifications.length === 0 ? (
           <p className="no-notifications">

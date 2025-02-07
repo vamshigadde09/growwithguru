@@ -480,10 +480,7 @@ const shareInterviewRequest = async (req, res) => {
     !shareDetails ||
     !StudentshareDetails
   ) {
-    return res.status(400).json({
-      message:
-        "Missing required fields: applicationNumber, newTeacherId, shareDetails, StudentshareDetails.",
-    });
+    return res.status(400).json({ message: "Missing required fields." });
   }
 
   try {
@@ -493,23 +490,25 @@ const shareInterviewRequest = async (req, res) => {
       return res.status(404).json({ message: "Application not found." });
     }
 
-    // Update current teacher's status to "Shared"
+    // Mark the current teacher's entry as "Sent"
     const currentTeacher = interview.teacher.find(
       (teacher) => teacher.status === "Accepted"
     );
     if (currentTeacher) {
-      currentTeacher.status = "Shared";
+      currentTeacher.status = "Shared"; // Change status to "Shared"
+      currentTeacher.sentReceivedStatus = "Sent"; // Mark as Sent
     }
 
-    // Add the new teacher with all application details
+    // Add the new teacher and mark it as "Received"
     interview.teacher.push({
       teacherId: newTeacherId,
       shareDetails,
       StudentshareDetails,
       status: "Shared",
+      sentReceivedStatus: "Received",
     });
 
-    // Update global application status
+    // **IMPORTANT:** Update global interview status
     interview.status = "Shared";
 
     await interview.save();
@@ -533,6 +532,7 @@ const shareInterviewRequest = async (req, res) => {
           StudentshareDetails,
         },
         status: "Shared",
+        sentReceivedStatus: "Received",
       });
       await teacher.save();
     }

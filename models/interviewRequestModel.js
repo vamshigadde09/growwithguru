@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const interviewRequestSchema = new mongoose.Schema(
   {
+    applicationNumber: { type: Number, unique: true, required: true },
     email: { type: String, required: true },
     studentName: { type: String, required: true },
     topic: {
@@ -60,6 +61,11 @@ const interviewRequestSchema = new mongoose.Schema(
           enum: ["Accepted", "Rejected", "Pending", "Completed", "Shared"],
           default: "Pending",
         },
+        sentReceivedStatus: {
+          type: String,
+          enum: ["Sent", "Received"],
+          default: "Sent",
+        },
         detailsshared: {
           type: Boolean,
           default: false,
@@ -76,7 +82,6 @@ const interviewRequestSchema = new mongoose.Schema(
     finalfeedback: { type: Boolean, default: false },
     isFeedbackSubmitted: { type: Boolean, default: false },
     feedbackId: { type: String, default: null },
-    applicationNumber: { type: Number, unique: true, required: true },
     isReviewSubmitted: {
       type: Boolean,
       default: false,
