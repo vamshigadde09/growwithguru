@@ -218,3 +218,43 @@
   margin: 5px 0;
   font-size: 0.95em;
 }
+
+/* General TextField Styling */
+.textfield-container {
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+/* Customize input field */
+.MuiOutlinedInput-root {
+  border-radius: 8px; /* Rounded corners */
+  font-size: 14px;
+}
+
+/* Adjust padding inside the input */
+.MuiOutlinedInput-input {
+  font-size: 14px;
+  padding: 10px;
+}
+
+/* Style the label */
+.MuiInputLabel-root {
+  font-size: 14px;
+  color: #555; /* Slightly darker label */
+}
+
+/* Highlight effect when focused */
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #1976d2; /* Blue highlight */
+}
+
+/* Placeholder text color */
+.MuiInputLabel-root.Mui-focused {
+  color: #1976d2; /* Blue label when focused */
+}
+
+/* Helper text (for errors, hints, etc.) */
+.MuiFormHelperText-root {
+  font-size: 12px;
+  color: #d32f2f; /* Error text in red */
+}

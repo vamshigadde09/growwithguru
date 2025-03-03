@@ -254,6 +254,7 @@ const StudentPortal = () => {
           {!isFilterMode ? (
             <>
               <Autocomplete
+                className="teacher-search-input"
                 options={suggestedTeachers}
                 getOptionLabel={(option) =>
                   `${option.name} - ${option.designation}` || "No Name"
@@ -308,7 +309,8 @@ const StudentPortal = () => {
           ) : (
             <>
               <Autocomplete
-                options={groupedOptions}
+                className="teacher-search-input"
+                options={groupedOptions.flatMap((group) => group.options)}
                 getOptionLabel={(option) => option.label}
                 value={selectedSkill}
                 onChange={(event, newValue) => setSelectedSkill(newValue)}
@@ -318,9 +320,9 @@ const StudentPortal = () => {
                     label="Filter by Skill"
                     variant="outlined"
                     placeholder="Select a skill"
-                    style={{ flex: 1, marginRight: "10px" }}
                   />
                 )}
+                style={{ flex: 1, marginRight: "10px" }}
               />
               <button
                 className="filter-search-btn"

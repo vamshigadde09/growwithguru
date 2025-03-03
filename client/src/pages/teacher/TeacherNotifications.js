@@ -387,23 +387,31 @@ const TeacherNotifications = () => {
                 {notification.status === "Pending" &&
                   (editingType[notification.applicationNumber] ? (
                     <>
-                      <textarea
-                        placeholder={
-                          editingType[notification.applicationNumber] ===
-                          "Reject"
-                            ? "Enter rejection reason"
-                            : "Enter acceptance response"
-                        }
-                        value={
-                          responseReasons[notification.applicationNumber] || ""
-                        }
-                        onChange={(e) =>
-                          handleResponseChange(
-                            notification.applicationNumber,
-                            e.target.value
-                          )
-                        }
-                      />
+                      <div className="textfield-container">
+                        <TextField
+                          label={
+                            editingType[notification.applicationNumber] ===
+                            "Reject"
+                              ? "Enter rejection reason"
+                              : "Enter acceptance response"
+                          }
+                          variant="outlined"
+                          value={
+                            responseReasons[notification.applicationNumber] ||
+                            ""
+                          }
+                          onChange={(e) =>
+                            handleResponseChange(
+                              notification.applicationNumber,
+                              e.target.value
+                            )
+                          }
+                          fullWidth
+                          multiline
+                          rows={3}
+                        />
+                      </div>
+
                       <button
                         onClick={() =>
                           editingType[notification.applicationNumber] ===
@@ -501,18 +509,30 @@ const TeacherNotifications = () => {
                             style={{ marginBottom: "10px" }}
                           />
 
-                          <textarea
-                            placeholder="Enter reason for sharing"
+                          <TextField
+                            className="share-reason-textfield"
+                            label="Enter reason for sharing"
+                            variant="outlined"
                             value={shareDetails}
-                            onChange={(e) => setShareDetails(e.target.value)} // Update shareDetails state
+                            onChange={(e) => setShareDetails(e.target.value)}
+                            fullWidth
+                            multiline
+                            rows={3}
                           />
-                          <textarea
-                            placeholder="Enter student sharing details"
+
+                          <TextField
+                            className="student-share-textfield"
+                            label="Enter student sharing details"
+                            variant="outlined"
                             value={StudentshareDetails}
                             onChange={(e) =>
                               setStudentshareDetails(e.target.value)
-                            } // Update StudentshareDetails state
+                            }
+                            fullWidth
+                            multiline
+                            rows={3}
                           />
+
                           <button
                             onClick={() =>
                               handleShare(

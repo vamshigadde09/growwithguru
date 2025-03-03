@@ -206,3 +206,20 @@ blockquote {
 .see-more-link:hover {
   color: #00509e;
 }
+
+/* Common style for both text fields */
+.searchbar .MuiTextField-root {
+  width: 100%; /* Ensures full width inside flex container */
+}
+
+/* Style specific to teacher name search */
+.searchbar .teacher-search-input .MuiOutlinedInput-root {
+  background-color: white;
+  border-radius: 5px;
+}
+
+/* Style specific to skill filter */
+.searchbar .skill-filter-input .MuiOutlinedInput-root {
+  background-color: #f0f0f0;
+  border-radius: 5px;
+}
